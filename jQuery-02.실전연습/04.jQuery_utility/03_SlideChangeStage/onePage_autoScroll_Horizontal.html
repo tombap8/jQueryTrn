@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>One Page Scroll - Auto Scroll Horizontal</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            /*세로%기준*/
+            overflow: hidden;
+            /*스크롤없앰!*/
+        }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+            text-shadow: 0 0 2px #777;
+        }
+
+        ul::after {
+            content: "";
+            display: block;
+            clear: both;
+            /*float해제*/
+        }
+
+        ul,
+        ol {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            /*3無*/
+        }
+
+        li {
+            float: left;
+            /*옆으로 흐르게*/
+        }
+
+        img {
+            border: none;
+            /*링크시 테두리없앰*/
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 0;
+            padding: 0;
+            font-size: 100%;
+            /*16px기준*/
+        }
+
+        /*상단영역*/
+        .top {
+            position: fixed;
+            /*상단고정*/
+            width: 100%;
+            z-index: 999999;
+            /*맨위로!*/
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /*속박스*/
+        .inbox {
+            position: relative;
+            /*부모자격*/
+            width: 100%;
+            max-width: 1400px;
+            /*최대가로폭*/
+            margin: 0 auto;
+            /*가로중앙*/
+        }
+
+        /*상단영역 속박스*/
+        #top {
+            height: 80px;
+        }
+
+        /*로고*/
+        #logo {
+            position: absolute;
+            display: block;
+            width: 250px;
+            height: 100%;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        #logo img {
+            position: relative;
+            top: -30px;
+            width: 100%;
+        }
+
+        /*GNB 메뉴*/
+        #gnb {
+            position: absolute;
+            top: 40px;
+            right: 2%;
+        }
+
+        #gnb li {
+            margin: 0 7px;
+        }
+
+        /*메뉴에 마우스 오버시*/
+        #gnb a:hover {
+            color: lime;
+            text-decoration: overline;
+            /*윗줄*/
+        }
+
+        #gnb li:hover {
+            transform: scale(1.1);
+        }
+
+        /*선택된 메뉴 class*/
+        #gnb li.on a {
+            color: lime;
+            text-decoration: overline;
+            /*윗줄*/
+        }
+
+        #gnb li.on {
+            transform: scale(1.1);
+        }
+
+        /*개별 페이지 디자인*/
+        /*페이지 전체부모*/
+        .wrap{
+            width: 700%;
+            height: 100%;
+            display: flex;
+        }
+        
+        .page {
+            position: relative;
+/*            float: left;*/
+            flex: 1;
+            /*width: 14.285%;*//*7등분*/
+            height: 100%;
+            /*body의 100%기준*/
+        }
+
+        #page1 {
+            background: url(images/pic1.png) no-repeat top/cover;
+        }
+
+        #page2 {
+            background: url(images/pic2.png) no-repeat top/cover;
+        }
+
+        #page3 {
+            background: url(images/pic3.png) no-repeat top/cover;
+        }
+
+        #page4 {
+            background: url(images/pic4.png) no-repeat top/cover;
+        }
+
+        #page5 {
+            background: url(images/pic5.png) no-repeat top/cover;
+        }
+
+        #page6 {
+            background: url(images/pic6.png) no-repeat top/cover;
+        }
+
+        #page7 {
+            background: url(images/pic7.png) no-repeat top/cover;
+        }
+
+        /*블릿 네비게이션*/
+        ol#bnavi {
+            position: fixed;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            /*세로중앙*/
+            width: 15px;
+        }
+
+        #bnavi>li {
+            position: relative;
+            /*부모자격*/
+            width: 100%;
+            height: 15px;
+            box-sizing: border-box;
+            /*크기유지*/
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            /*원*/
+            box-shadow: 0 0 2px #777;
+            margin: 6px 0;
+            /*위아래 6px*/
+        }
+
+        #bnavi span {
+            position: absolute;
+            top: -50%;
+            right: 200%;
+            white-space: nowrap;
+            /*줄바꿈방지*/
+            font: bold .9rem "맑은 고딕";
+            text-shadow: 1px 0 #888, -1px 0 #888, 0 1px #888, 0 -1px #888;
+            /*글자테두리*/
+            display: none;
+            /*글자숨기기*/
+        }
+
+        /*마우스오버시 글자보이기*/
+        #bnavi li:hover span {
+            display: block;
+        }
+
+        /*a태그 크기 li와 같게*/
+        #bnavi a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /*선택된 블릿네비 class*/
+        #bnavi li.on {
+            background-color: #EC686A;
+            transform: scale(1.15);
+        }
+
+        #bnavi li.on span {
+            display: block;
+            /*선택메뉴 글자보이기*/
+        }
+    </style>
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script>
+        ///// 전역변수 ///////////////////////////////
+
+        // 1. 페이지번호
+        var pno = 0;
+        // 2. 전체 페이지수
+        const totnum = 7;
+        // const는 변수 var와 달리 변경불가한 상수를 말한다!
+        // 3. 광스크롤방지
+        var psts = 0; //(0-허용,1-불허용)
+
+        /////////////////////////////////////////////
+
+
+
+
+        $(function() { /// jQB //////////////////
+            /*  
+              [ 자동스크롤 구현! ]
+              1. 기능: 스크롤휠을 위나 아래로 작동 시킬때 페이지 스크롤이 위나 아래로 자동으로 이동되는 애니메이션 기능
+              
+              2. 마우스휠을 움직일때 발생하는 이벤트는?
+                  (1) mousewheel : 초기버전부터 사용한 마우스휠 이벤트
+                  (2) wheel : html5 버전 이후에 나온 마우스휠 이벤트
+                              (아직 벤더사에서 표준화못됨-ie,사파리지원X)
+                  (3) DOMMouseScroll : 파이어폭스 전용 이벤트
+              -> 결론적으로 mousewheel과 DOMMouseScroll을 동시에 사용함
+              
+              3. 마우스휠 이벤트와 함수를 연결하는 방법은?
+                  (1) bind(이벤트명,함수) : 최신버전에서 사용안됨!
+                  (2) on(이벤트명,함수) : 각종 이벤트와 함수를 연결해 사용함
+              
+              4. 마우스휠 이벤트 발생시 기본스크롤 이동 막는방법은?
+                  (1) html,body 에 overflow:hidden 설정으로 스크롤막기
+                      - 자동스크롤 페이지이동은 보통 스크롤바를 없앤다~!
+                  (2) 마우스휠 이벤트가 걸린 코드에 preventDefault로 
+                      기본 이동기능막기
+                      (주의사항!- window,document,body와 같이 브라우저 최상위 객체나 요소에 본 막기기능은 사용못하도록 변경되었음-우회방법은 body를 overflow:hidden처리하고 속박스를 만들어서 스크롤가능상태로 두어 이것을 이벤트 대상으로 삼아서 스크롤막기를 한다!)
+              */
+
+
+
+            // - 여러가지 이벤트는 띄어쓰기로 나열함!(동시적용 가능)
+            $(document).on("mousewheel DOMMouseScroll",
+                function(e) {
+
+                    /////// 광스크롤막기 /////////////////
+                    if (psts === 1) return true; //돌아가!
+                    psts = 1; //잠금(기존0값을 변경)
+                    setTimeout(function() {
+                        psts = 0;
+                    }, 600); /// 타임아웃 ///
+                    ////////////////////////////////////
+                    // return true는 마우스 휠 기능을 그대로 두고 돌아감
+                    // return false는 마우스 휠 기능을 정지 시키게되는데 
+                    // 이것을 브라우저가 window,document,body에 대해서
+                    // 금지하기 때문에 여기서는 return true해야한다!
+
+
+
+
+                    // 1. 이벤트발생확인
+                    //console.log("휠~~~");
+
+                    // 기본이동막기는 하지않음!
+                    //(대신 body에 overflow:hidden)
+
+                    // 2. 마우스 휠에서 가장 중요한 개념
+                    /* wheelDelta 란?
+                     - ie, chrome용(opera는 detail을 사용함)
+                     - 마우스휠 이벤트가 발생함에 따라 이벤트 횟수 및
+                         방향과 이동거리 등을 리턴해주는 내부 속성
+                     - 스크롤될 경우 방향과 이동거리를 알 수 있음
+                     (+는 윗방향, -는 아랫방향)*/
+                    e = window.event || e;
+                    // 전달되는 이벤트값이 그대로 쓰거나 없다면 window.event값을 사용할 수 있도록 처리함
+                    // 변수 = 전달변수1 || 전달변수2
+                    // 해석: 뒤의 두변수 중 true(유효한것)인것이 할당됨
+
+
+                    var delta = e.detail ? e.detail : e.wheelDelta;
+                    // 변수 = 조건연산자 -> 조건연산자의 결과가 할당됨
+                
+                /// 파이어폭스 브라우저일 경우 방향 부호를 반대로하기
+                // 브라우저 정보 알아내기
+                //console.log("현재브라우저:"
+                            //+navigator.userAgent);
+                // navigator.userAgent 는 브라우저별 세부정보를 보여주는 속성
+                // 파이어폭스 브라우저는 "Firefox"라는 문자가 포함됨
+                // 이것으로 브라우저를 구분함
+                // test(문자열) JS내장함수로 이것을 구분한다!
+                // 정규표현식으로 이 문자를 테스트함
+                // 정규표현식.test(문자열) -> 문자열에 정규표현식 문자가 있으면 true, 없으면 false를 리턴함!
+                if(/Firefox/i.test(navigator.userAgent)){
+                    //console.log("난파폭!");
+                    delta = -delta;//부호를 반대로!
+                }////// if문 ////////////////////////
+                
+                
+
+                    //console.log("델타값:" + delta);
+
+                    //3. 마우스휠 방향에 따라 페이지번호 증감! //
+
+                    // 음수일때 아랫방향
+                    if (delta < 0) {
+                        pno++; //1씩증가
+                        // 한계페이지번호 마지막번호에 고정!
+                        if (pno === totnum) pno = totnum - 1;
+                    } /// if ///////////
+                    // 양수일때 윗방향
+                    else {
+                        pno--; //1씩감소
+                        // 한계페이지번호 첫번호에 고정!
+                        if (pno === -1) pno = 0;
+                    } /// else ////////
+
+                    //console.log("페이지번호:" + pno);
+
+                    // 4. 해당순번 페이지 left 위치값 구하기
+                    var pgpos = $(".page").eq(pno).offset().left;
+
+                    console.log("이동페이지위치:" + pgpos);
+
+                    // 5. 페이지 이동 애니메이션
+                    $("html,body").stop().animate({
+                        scrollLeft: pgpos + "px"
+                    }, 600, "easeInOutQuint");
+
+                    // 6. 메뉴변경함수 호출하기!
+                    chgMenu();
+
+
+
+                }); //////////////// mousewheel ////////////////
+            ////////////////////////////////////////////////////
+
+
+
+
+            //// GNB a링크를 클릭하면 해당 페이지 위치로 이동 애니메이션 ///
+            // 이벤트대상: #gnb a
+            $("#gnb a,#bnavi a").click(function(e) {
+                // 1. a태그 기본이동 막기
+                e.preventDefault();
+
+                // 클릭된 순번 알아오기
+                var idx = $(this).parent().index(); //li의 순번
+                //console.log("클릭된순번:" + idx);
+                // 전역 페이지번호에 idx일치시키기
+                pno = idx;// 메뉴변경함수를 위해 전역변수에 일치!
+
+
+                // 2. a태그의 href값 읽어오기(이동할 페이지 아이디값)
+                var pid = $(this).attr("href");
+                //console.log("아이디:" + pid);
+
+                // 3. 이동할 페이지 아이디로 페이지 위치값(left값) 구하기
+                // offset() 메서드로 현재 요소 위치,크기정보를 알 수 있다!
+                var pgpos = $(pid).offset().left;
+                //console.log("top값:" + pgpos);
+
+                // 4. 스크롤 이동 애니메이션
+                // 대상: html,body (범용브라우저 코딩시 선택대상)
+                // 사용속성: scrollTop (세로스크롤바 위치속성)
+                // 비교- scrollLeft (가로스크롤바 위치속성)
+                $("html,body").animate({
+                    scrollLeft: pgpos + "px"
+                }, 600, "easeInOutQuint");
+
+                // 5. 이동선택된 메뉴변경하기(class="on"넣기)
+                chgMenu();//메뉴변경함수호출!
+
+
+            }); ////// click ////////////////
+
+
+
+
+        }); ////// jQB //////////////////////////
+        ////////////////////////////////////////
+        ////////////////////////////////////////
+
+
+        /*//////////////////////////////////////////////
+            함수명: chgMenu
+            기능: GNB메뉴와 블릿메뉴 현재페이지에 맞게 변경하기
+        */ //////////////////////////////////////////////
+        function chgMenu() {
+            // 페이지번호 pno에 해당하는 메뉴만 class 넣기
+            
+            $("#gnb a").eq(pno).parent() //선택된 a요소의 부모 li를 선택
+                .addClass("on") //클래스 "on"넣기
+                .siblings() //선택된 li외의 다른 li 모두선택!
+                .removeClass("on"); //모두 클래스 "on"지우기
+
+            $("#bnavi a").eq(pno).parent() //선택된 a요소의 부모 li를 선택
+                .addClass("on") //클래스 "on"넣기
+                .siblings() //선택된 li외의 다른 li 모두선택!
+                .removeClass("on"); //모두 클래스 "on"지우기
+
+        } ////// chgMenu 함수 //////////////////////////////////
+        /////////////////////////////////////////////////
+        /////////////////////////////////////////////////
+    </script>
+</head>
+
+<body>
+    <!--상단영역-->
+    <div class="top">
+        <header id="top" class="inbox">
+            <!--로고-->
+            <a href="#" id="logo">
+                <img src="images/logo.png" alt="메가박스로고">
+            </a>
+            <!--GNB메뉴-->
+            <nav id="gnb">
+                <ul>
+                    <li class="on">
+                        <a href="#page1">
+                            아수라
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page2">
+                            고산자
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page3">
+                            인천상륙작전
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page4">
+                            봉이김선달
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page5">
+                            비밀은없다
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page6">
+                            아가씨
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page7">
+                            탐정홍길동
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+    </div>
+
+    <!--각 페이지박스-->
+    <div class="wrap">
+        <section id="page1" class="page"></section>
+        <section id="page2" class="page"></section>
+        <section id="page3" class="page"></section>
+        <section id="page4" class="page"></section>
+        <section id="page5" class="page"></section>
+        <section id="page6" class="page"></section>
+        <section id="page7" class="page"></section>
+    </div>
+
+    <!--블릿네비게이션-->
+    <ol id="bnavi">
+        <li class="on">
+            <a href="#page1">
+                <span>아수라</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page2">
+                <span>고산자</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page3">
+                <span>인천상륙작전</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page4">
+                <span>봉이김선달</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page5">
+                <span>비밀은없다</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page6">
+                <span>아가씨</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page7">
+                <span>탐정홍길동</span>
+            </a>
+        </li>
+    </ol>
+
+
+
+
+
+
+
+</body></html>

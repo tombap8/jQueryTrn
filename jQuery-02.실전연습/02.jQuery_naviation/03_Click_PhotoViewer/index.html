@@ -1,0 +1,478 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> 슬라이딩 내비게이션(바네이 메뉴) </title>
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+    <script>
+        $(function() { //////// jQB //////////////////////
+
+            // 자동슬라이드 넘기기(웹디기능사용)
+            // 대상선정: #viewer (슬라이드)
+            var tg = $("#viewer");
+            // 대상선정: #btnGroup (블릿버튼)
+            var indic = $("#btnGroup");
+            // 슬라이드번호
+            var sno = 0;
+            // 광클금지(0-허용,1-불허용)
+            var prot = 0;
+
+
+            /////////////////////////////////////////
+            //// goSlide 함수(이동함수) ///////////////
+            /////////////////////////////////////////
+
+            var goSlide = function(dir) { //dir-방향(0-왼쪽,1-오른쪽)
+
+                // 광클금지 ////////////////////////////
+                if (prot === 1) return false; //돌아가!
+                prot = 1; //잠금!
+                setTimeout(function() {
+                    prot = 0; //해제!
+                }, 600); //// 타임아웃 ////
+                ///////////////////////////////////////
+
+                // 호출여부확인,전달값확인
+                console.log("확인:" + dir);
+
+                // 왼쪽버튼 클릭시 0, 오른쪽버튼 클릭시 1, 자동이동시 1
+                if (dir === 0) { // 왼쪽버튼클릭
+
+                    // 맨뒤 li를 잘라서 맨앞으로 이동과 동시에 left: -100% 셋팅
+                    tg.prepend(tg.find("li").last())
+                        .css({
+                            left: "-100%"
+                        })
+                        // left:0으로 애니메이션 들어오기
+                        .animate({
+                            left: "0"
+                        }, 600);
+
+                    // 블릿슬라이드 번호 1씩 감소
+                    sno--;
+                    if (sno === -1) sno = 3;
+
+
+                } //// if //////////////
+                else if (dir === 1) { // 오른쪽버튼클릭, 자동이동
+
+                    tg.animate({
+                            left: "-100%"
+                        }, 600,
+                        function() { // 이동후
+                            //맨앞li잘라서 맨뒤로 이동
+                            tg.append(tg.find("li").first())
+                                //동시에 tg위치값 left:0
+                                .css({
+                                    left: "0"
+                                });
+
+                        }); /// animate //////
+
+                    // 블릿슬라이드 번호증가
+                    sno++;
+                    if (sno === 4) sno = 0;
+
+                } //// else if //////////////////
+
+                /// 블릿변경하기 - class="on" 주기
+                indic.find("li").eq(sno).addClass("on")
+                    .siblings().removeClass("on");
+
+
+
+            }; ////// goSlide함수 /////////////
+            /////////////////////////////////
+
+
+
+            /////////////////////////////////////////
+            //// autoCall 함수(자동호출함수) ////////
+            /////////////////////////////////////////
+
+            // 인터발변수
+            var autoI;
+
+            var autoCall = function() {
+
+                // 3초간격으로 슬라이드를 왼쪽방향으로 무한이동하기
+                // autoI변수에 담아서 clear함
+                autoI = setInterval(function() {
+                    goSlide(1);
+                }, 3000); //// 인터발함수 ////////////
+
+            }; //// autoCall함수 ////////////////////////////////
+            ////////////////////////////////////////////////////
+
+
+            /////////////////////////////////////////
+            //// clearAuto 함수(자동지우기함수) ////////
+            /////////////////////////////////////////
+
+            // 타임아웃변수
+            var autoT;
+
+            var clearAuto = function() {
+                // 인터발 지우기
+                clearInterval(autoI);
+                // 타임아웃 지우기(실행쓰나미방지)
+                clearTimeout(autoT);
+
+                // 일정시간 후 타임아웃 셋팅하기
+                autoT = setTimeout(autoCall, 3000);
+
+            }; ///// clearAuto 함수 //////////////////////
+            /////////////////////////////////////////////
+
+
+            //// 자동넘김함수 최초호출! ////
+            autoCall();
+
+
+
+
+
+            /// 오른쪽버튼 클릭시 이동함수 호출
+            // 대상: .rbtn
+            $(".rbtn").click(function() {
+
+                // 자동호출지우기함수 호출!
+                clearAuto();
+
+                // 이동함수 호출(오른쪽이니까 1보내기)
+                goSlide(1);
+
+            }); ///////// click //////////////
+
+            /// 왼쪽버튼 클릭시 이동함수 호출
+            // 대상: .lbtn
+            $(".lbtn").click(function() {
+
+                // 자동호출지우기함수 호출!
+                clearAuto();
+
+                // 이동함수 호출(왼쪽이니까 0보내기)
+                goSlide(0);
+
+            }); ///////// click /////////////
+
+
+            ///// 블릿 클릭시 슬라이드 이동하기 /////
+            // 대상: #btnGroup li
+            $("#btnGroup li").click(function() {
+                
+                // 광클금지 ////////////////////////////
+                if (prot === 1) return false; //돌아가!
+                prot = 1; //잠금!
+                setTimeout(function() {
+                    prot = 0; //해제!
+                }, 600); //// 타임아웃 ////
+                ///////////////////////////////////////
+
+                // 자동호출지우기함수 호출!
+                clearAuto();
+
+                // 클릭된 li순번
+                var idx = $(this).index();
+                console.log("블릿순번:" + idx);
+
+                // 클릭된 슬라이드와 현재 슬라이드 간의  차이를 계산한다!
+                // sno가 현재 슬라이드 순번
+                // 차이 = 클릭된 li순번 - 현재슬라이드 순번
+                var diff = idx - sno;
+                console.log("슬라이드차:" + diff);
+
+                // diff결과에 대한 해석:
+                // 결과가 플러스이면 현재 슬라이드 보다 큰 뒤쪽 슬라이드로 이동
+                // 결과가 마이너스이면 현재 슬라이드 보다 작은 앞쪽 슬라이드로 이동
+                // 숫자값은 이동할 슬라이드 차이개수
+
+                // 1. 클릭된 순번보다 뒤쪽슬라이드로 이동
+                // 기본형은 오른쪽 버튼 클릭시에 이동하는 것과 같다!
+                if (diff > 0) {
+                    //먼저 이동하기 잘라내기!
+                    tg.animate({
+                            left: (-100 * diff) + "%"
+                        }, 600,
+                        function() { // 이동후
+
+                            // for문으로 차이수만큼 
+                            //맨뒤로 이동 셋팅하기!
+
+                            // 임시변수(숫자변경할것임!)
+                            var temp = diff;
+
+                            for (var i = 0; i < diff; i++) {
+                                //맨앞li잘라서 맨뒤로 이동
+                                temp--; //1씩감소
+
+                                tg.append(tg.find("li").first())
+                                    //동시에 tg위치값 left:0
+                                    .css({
+                                        left: (-100 * temp) + "%"
+                                    });
+
+                            } //// for문 ////////
+
+
+
+                        }); /// animate //////
+                } ///// if ////////////////
+
+                /// 2. 클릭된 순번보다 앞쪽 슬라이드로 이동
+                // 왼쪽이동버튼을 클릭한 것과 같은 이동원리임!
+                else if (diff < 0) {
+                    // 먼저 잘라서 앞에 놓고 들어오기!
+
+                    // diff값이 마이너스 이므로 양수를 만들어줌
+                    diff = -diff;
+
+                    // 임시변수
+                    var temp = 1;
+
+                    for (var i = 0; i < diff; i++) {
+
+                        // 맨뒤 li를 잘라서 맨앞으로 이동과 동시에 left값 셋팅
+                        tg.prepend(tg.find("li").last())
+                            .css({
+                                left: (-100 * temp) + "%"
+                            });
+
+                        temp++; //1씩증가
+
+                    } /// for문 ///////////////
+
+
+                    // left:0으로 애니메이션 들어오기
+                    tg.animate({
+                        left: "0"
+                    }, 600);
+
+
+                } ////// else if ///////////////////
+
+
+
+
+
+
+                // 블릿변경전 전역변수 슬라이드순번 sno에 idx값 넣기
+                // 현재 이동슬라이드는 클릭된 블릿 순번과 같다!
+                sno = idx;
+
+                /// 블릿변경하기 - class="on" 주기
+                indic.find("li").eq(sno).addClass("on")
+                    .siblings().removeClass("on");
+
+
+            }); ///////// click ////////////////
+
+
+
+
+
+
+
+
+
+        }); /////////// jQB //////////////////////////////
+    </script>
+
+    <style>
+        body {
+            font-size: 13px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #05184D;
+        }
+
+        #slider {
+            position: relative;
+            /*부모자격*/
+            margin: 0 auto;
+            margin-top: 100px;
+            background: #FFF;
+            width: 600px;
+            max-width: 100%;
+            border: #FDF6DD 2px solid;
+            overflow: hidden;
+        }
+        /*비율유지는 부모박스에서 가상요소로함!*/
+        #slider::before{
+            content: "";
+            display: block;
+            padding-top: 58.333%;
+            /*
+                비율계산:
+                600px : 350px = 100% : x
+                x = 350 * 100 / 600 = 58.333
+            */
+        }
+        
+        
+        #viewer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            /*부모의 높이값을 패딩탑으로 만들었으로 자식은 앱솔루트로
+            부모의 비율유지 높이값을 따라가도록 height:100%설정함*/
+            width: 400%;
+            /*4개이므로*/
+            height: 100%;
+            /*부모박스 높이를 따라감(비율높이)*/
+            display: flex;
+            /*기본없애기*/
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        #viewer li {
+            flex: 1;
+        }
+        
+        #viewer li img{
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /*--------   ul li CSS ------------ */
+        #btnGroup {
+            position: absolute;
+            bottom: 2%;
+            right: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        #btnGroup li {
+            float: left;
+            width: 16px;
+            height: 16px;
+            list-style: none;
+            margin-right: 6px;
+            cursor: pointer;
+            background: url(image/btn.png) no-repeat;
+        }
+
+        /*li에 마우스오버시와 class="on"인 경우
+        -배경이미지위치이동하여 흰색블릿으로 변경*/
+        #btnGroup li:hover,
+        #btnGroup li.on {
+            background-position: 0 -16px;
+        }
+
+        /*배경이미지설명*/
+        .ir {
+            display: block;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        /*이동버튼*/
+        .abtn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            /*세로방향중앙*/
+            width: 25px;
+            height: 49px;
+            background-repeat: no-repeat;
+            /*outline: 1px solid red;*/
+        }
+
+        /*마우스오버시(공통)*/
+        /*이동버튼*/
+        .abtn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            /*세로방향중앙*/
+            width: 25px;
+            height: 49px;
+            background-repeat: no-repeat;
+            /*outline: 1px solid red;*/
+        }
+
+        /*마우스오버시(공통)*/
+        .abtn:hover {
+            background-position: 0 -49px;
+        }
+
+        /*왼쪽버튼*/
+        .lbtn {
+            left: 20px;
+            background-image: url(image/btn_shop_bn_left.png);
+        }
+
+        /*오른쪽버튼*/
+        .rbtn {
+            right: 20px;
+            background-image: url(image/btn_shop_bn_right.png);
+        }
+
+        .abtn:hover {
+            background-position: 0 -49px;
+        }
+
+        /*왼쪽버튼*/
+        .lbtn {
+            left: 20px;
+            background-image: url(image/btn_shop_bn_left.png);
+        }
+
+        /*오른쪽버튼*/
+        .rbtn {
+            right: 20px;
+            background-image: url(image/btn_shop_bn_right.png);
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+    <div id="slider">
+
+        <ul id="viewer">
+            <li>
+                <img src="image/slide1.jpg" alt="배너">
+            </li>
+            <li>
+                <img src="image/slide2.jpg" alt="배너">
+            </li>
+            <li>
+                <img src="image/slide3.jpg" alt="배너">
+            </li>
+            <li>
+                <img src="image/slide4.jpg" alt="배너">
+            </li>
+        </ul>
+
+        <!--블릿버튼-->
+        <ul id="btnGroup">
+            <li class="on"><span class="ir">블릿</span></li>
+            <li><span class="ir">블릿</span></li>
+            <li><span class="ir">블릿</span></li>
+            <li><span class="ir">블릿</span></li>
+        </ul>
+
+        <!--양쪽이동버튼-->
+        <a href="#" class="abtn lbtn">
+            <span class="ir">왼쪽이동버튼</span>
+        </a>
+        <a href="#" class="abtn rbtn">
+            <span class="ir">오른쪽이동버튼</span>
+        </a>
+
+    </div>
+
+    <!---------- jQuery code Start ---------->
+    <script>
+
+
+    </script>
+</body></html>

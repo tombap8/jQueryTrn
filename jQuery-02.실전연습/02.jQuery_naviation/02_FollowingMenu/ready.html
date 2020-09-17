@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>어디서나 펼쳐지는 내비게이션</title>
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+    <script>
+        $(function() { /////// jQB ///////////////////////
+            console.log("로딩완료!");
+            /*
+                mosemove 이벤트
+                - 선택요소 내부에 마우스 포인터가 움직일때 마다 
+                  계속 발생하는 이벤트
+                - mousemove() 메서드 이용
+            */
+            // 이벤트 대상: #home
+            $("#home").mousemove(function(e) { //e- 이벤트전달변수
+                // 마우스 포인터 위치값 알아내기 //
+                //e.pageX -> X축 좌표값(웹문서 왼쪽끝에서 부터 위치 px값)
+                //e.pageY -> Y축 좌표값(웹문서 위쪽끝에서 부터 위치 px값)
+                // \n은 엔터표시자
+                //console.log("x좌표:"+e.pageX+"\n y좌표:"+e.pageY);
+
+                // 움직일 박스가 필요로 하는 좌표는 y좌표임!
+                // 박스 중간에 오도록 박스크기의 절반값을 뺌!
+                var posy = e.pageY - $(this).height() / 2;
+                //console.log("y좌표:" + posy);
+
+                // 컨테이너 박스 움직이기
+                // 대상: #container
+                $("#container").css({
+                    top: posy + "px"
+                }); ///// css /////////
+
+            }); //// mousemove /////////////////
+
+
+            // #home을 클릭하면 #menu의 left값을 변경하여 보이게함 //
+            var msts = 50;//클릭전환left값
+            $("#home").click(function() {
+
+                // 메뉴 left변경하여 애니메이션하기
+                // stop()은 큐(Queue)에 애니메이션 안쌓이게 함!
+                $("#menu").stop().animate({
+                    left: msts + "px"
+                }, 500);
+                
+                // 수치전환! 
+                // 비?집:놀이동산;
+                // 조건연산자(삼항연산자)
+                msts === 50 ? msts = -600 : msts = 50;
+                
+                console.log("수치상태:"+msts);
+
+            }); ///// click //////////////////////
+            
+            // #menu 의 li에 마우스 오버시 opacity값을 1로 변경
+            // 아웃시엔 opacity값을 원래대로 0.7로 복귀
+            // hover(함수1,함수2)
+            // fadeTo(시간,오파,이징,함수)
+            $("#menu li").hover(
+                function(){ // over
+                    $(this).stop().fadeTo(300,1);
+                },
+                function(){ // out
+                    $(this).stop().fadeTo(300,0.7);
+                });/////// hover /////////
+            
+            /// 메뉴클릭시 페이지 이동하기 /////
+            $("#menu li").click(function(){
+                // 클릭된 li의 순번(0부터)
+                var idx = $(this).index();
+                console.log("li순번:"+idx);
+                
+                switch(idx){
+                    case 0: idx = "http://www.naver.com"; break;
+                    case 1: idx = "http://www.google.com"; break;
+                    case 2: idx = "http://www.daum.net"; break;
+                } //// switch case문 //////////////
+                
+                console.log("url:"+idx);
+                
+                // 페이지 새창열기 ////
+                // location.href = 주소 -> 페이지이동
+                // window.open() -> 새창열기
+                window.open().location.href = idx;
+                
+                
+            });/////// click ////////////////
+            
+
+
+
+
+
+
+
+        }); ////////// jQB ///////////////////////////////
+        /////////////////////////////////////////////////
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        div#container {
+            width: 600px;
+            height: 200px;
+            left: 0px;
+            top: 0px;
+            position: relative;
+        }
+
+        div#home {
+            width: 50px;
+            height: 200px;
+            background: #FF9999;
+            left: 0px;
+            top: 0px;
+            position: absolute;
+            z-index: 2;
+        }
+
+        ul {
+            width: 600px;
+            height: 200px;
+            list-style: none;
+            left: -600px;
+            top: 0px;
+            position: absolute;
+            z-index: 1;
+        }
+
+        ul li {
+            width: 200px;
+            height: 200px;
+            float: left;
+            opacity: 0.7;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <div id="container">
+        <div id="home">HOME </div>
+
+        <ul id="menu">
+            <li><img src="th_bg1.jpg" /></li>
+            <li><img src="th_bg2.jpg" /></li>
+            <li><img src="th_bg3.jpg" /></li>
+        </ul>
+    </div>
+
+
+</body></html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title> fadeInOut 갤러리 </title>
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+    <script>
+        $(function(){ /////// jQB ///////////////////////
+            console.log("로딩완료!");
+            
+            // fade효과로 계속 넘어가게 setInterval함수를 사용
+            // setInterval(함수,시간)
+            // 대상: .fadeShow img
+            var tg = $(".fadeShow img");
+            var seq = 0;//순번
+            
+            setInterval(function(){                
+                
+                // 순번증가
+                seq++;
+                if(seq===3) seq=0;
+                
+                
+                // 대상을 순서대로 class="on"주기
+                tg.eq(seq).addClass("on")
+                .siblings().removeClass("on");
+                
+            },3000);
+            
+            
+        });////////// jQB ///////////////////////////////
+        /////////////////////////////////////////////////
+    
+    </script>
+    <style>
+        body {
+            margin: 20px auto;
+            padding: 0;
+            width: 620px;
+            background: #192839;
+        }
+
+        .fadeShow {
+            background: #666;
+            width: 600px;
+            height: 350px;
+            border: 2px solid #FDF6DD;
+        }
+
+        .fadeShow img {
+            position: absolute;
+            /*모든이미지 겹치게*/
+            opacity: 0;
+            transition: opacity .6s;
+        }
+
+        /*class="on"이 적용된 경우 보이고 맨위*/
+        .fadeShow img.on {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .fadeShow .active {
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="fadeShow">
+        <img class="on" src="slide1.jpg" alt="image1" />
+        <img src="slide2.jpg" alt="image2" />
+        <img src="slide3.jpg" alt="image3" />
+    </div>
+
+
+    <!---------- jQuery code Start ---------->
+    <script>
+
+    </script>
+</body></html>
+
+
+

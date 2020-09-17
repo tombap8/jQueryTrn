@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title> Sliding Captions 갤러리 </title>
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+
+    <script>
+        $(function() { /////// jQB ///////////////////////
+            console.log("로딩완료!");
+
+            // 캡션글 담은 em태그 모두 숨기기!
+            $("em").hide();
+
+            // 1. 기능정의: 썸네일 클릭시 메인 이미지 변경하기
+            // 2. 이벤트 종류 : click
+            // 3. 이벤트 대상: .thumbs a
+            // 4. 변경 대상: #largeImg img
+            // 5. 변경 내용: 메인 이미지의 src를 변경한다
+            $(".thumbs a").on("click", function(e) { //e-이벤트전달
+
+                // 기본이동막기
+                e.preventDefault();
+
+                // 클릭된(this) a태그의 href속성(attr()) 읽어오기
+                var isrc = $(this).attr("href");
+                //console.log(isrc);
+
+                // 메인이미지의 src값을 변경
+                $("#largeImg img").attr("src", isrc);
+
+                /// 캡션글 박스 넣기 ///////
+                // 1. 기능정의: 메인메이지 박스안에 div#caption를 추가한 후 미리 셋팅된 캡션글(em태그내용)읽어와서 캡션박스에 넣고 글박스가 위로 올라오도록 애니메이션한다.
+                // 2. 이벤트: 썸네일 클릭과 동시에 작동함
+
+                // 캡션박스를 지우고 항상 하나만 남긴다!
+                $("#caption").remove();
+
+                // 3. div#caption 박스를 
+                //  메인이미지박스(#largeImg)에 추가한다
+                $("#largeImg").append('<div id="caption"></div>');
+
+                // 4. 미리셋팅된 캡션글 읽어오기
+                // 캡션글이 있는 em태그는 항상 클릭된 a 다음에 있음!
+                var ctxt = $(this).next().text();
+                //console.log(ctxt);
+
+                // 5. 캡션글 박스에 넣기!
+                $("#caption").text(ctxt);
+
+                // 6. 캡션박스 위로 올라오기 애니메이션!
+
+                // 박스 높이값 구하기
+                var bH = $("#caption").outerHeight();
+                console.log("캡션높이:" + bH);
+                /*
+                    선택요소 높이값 구하는 메서드
+                    1) height() -> 순수높이값(패딩,보더 제외)
+                    2) innerHeight() -> 패딩을 포함한 내부높이값
+                    3) outerHeight() -> 보더,패딩을 포함한 내부높이값
+                    
+                    - 참고로 width도 동일함: 
+                    width(), innerWidth(), outerWidth() 가 있음
+                */
+                
+
+                $("#caption").animate({
+                    top: -bH + "px"
+                }, 300); //// animate /////
+
+
+
+
+
+
+
+            }); ////// click 함수 /////////////////
+
+
+
+        }); ////////// jQB ///////////////////////////////
+        /////////////////////////////////////////////////
+    </script>
+
+
+    <style type="text/css">
+        body {
+            margin: 20px auto;
+            padding: 0;
+            width: 620px;
+            background: #192839;
+        }
+
+        .thumbs {
+            width: 100px;
+            float: left;
+        }
+
+        .thumbs img {
+            border: solid 1px #ccc;
+            padding: 5px;
+            margin-bottom: 3px;
+        }
+
+        .thumbs img:hover {
+            border-color: #EF4018;
+        }
+
+        #largeImg {
+            border: solid 1px #ccc;
+            width: 500px;
+            height: 280px;
+            padding: 5px;
+            margin-left: 110px;
+            overflow: hidden;
+
+        }
+
+        #caption {
+            position: relative;
+            padding: 10px;
+            color: #FFFFFF;
+            border: 1px solid #CCC;
+            background: url(captionBg.png) repeat-y;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="thumbs">
+
+        <a href="images/pic1.jpg" title="image1"><img src="images/th_pic1.jpg" /></a>
+        <em>Lorem Ipsum is simply dummy text of the pdrinting and typesetting industry.</em>
+
+
+        <a href="images/pic2.jpg" title="image2"><img src="images/th_pic2.jpg" /></a>
+        <em> Lorem Ipsum is simply dummy tely dummy thely dummy tegxt of thely try.
+            Sed facilisis, sem a luctus bibendum, dui risus pellentesque velit, quis tempor magna
+            sem vel justo. Etiam eget ipsum ante. </em>
+
+        <a href="images/pic3.jpg" title="image3"><img src="images/th_pic3.jpg" /></a>
+        <em> Lorem Ipsum is simply dummy.</em>
+
+    </div>
+
+    <div id="largeImg"><img src="images/pic1.jpg" alt="image1" /></div>
+
+
+    <!---------- jQuery code Start ---------->
+    <script>
+
+
+
+    </script>
+</body></html>

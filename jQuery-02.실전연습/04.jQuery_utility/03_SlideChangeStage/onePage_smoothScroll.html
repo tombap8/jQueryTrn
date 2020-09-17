@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>One Page Scroll</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            /*세로%기준*/
+        }
+
+        #wrap {
+            /*body기준으로 화면크기에 맞춤!*/
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+        }
+
+
+        a {
+            text-decoration: none;
+            color: #fff;
+            text-shadow: 0 0 2px #777;
+        }
+
+        ul::after {
+            content: "";
+            display: block;
+            clear: both;
+            /*float해제*/
+        }
+
+        ul,
+        ol {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            /*3無*/
+        }
+
+        li {
+            float: left;
+            /*옆으로 흐르게*/
+        }
+
+        img {
+            border: none;
+            /*링크시 테두리없앰*/
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 0;
+            padding: 0;
+            font-size: 100%;
+            /*16px기준*/
+        }
+
+        /*상단영역*/
+        .top {
+            position: fixed;
+            /*상단고정*/
+            width: 100%;
+            z-index: 999999;
+            /*맨위로!*/
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /*속박스*/
+        .inbox {
+            position: relative;
+            /*부모자격*/
+            width: 100%;
+            max-width: 1400px;
+            /*최대가로폭*/
+            margin: 0 auto;
+            /*가로중앙*/
+        }
+
+        /*상단영역 속박스*/
+        #top {
+            height: 80px;
+        }
+
+        /*로고*/
+        #logo {
+            position: absolute;
+            display: block;
+            width: 250px;
+            height: 100%;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        #logo img {
+            position: relative;
+            top: -30px;
+            width: 100%;
+        }
+
+        /*GNB 메뉴*/
+        #gnb {
+            position: absolute;
+            top: 40px;
+            right: 2%;
+        }
+
+        #gnb li {
+            margin: 0 7px;
+        }
+
+        /*메뉴에 마우스 오버시*/
+        #gnb a:hover {
+            color: lime;
+            text-decoration: overline;
+            /*윗줄*/
+        }
+
+        #gnb li:hover {
+            transform: scale(1.1);
+        }
+
+        /*선택된 메뉴 class*/
+        #gnb li.on a {
+            color: lime;
+            text-decoration: overline;
+            /*윗줄*/
+        }
+
+        #gnb li.on {
+            transform: scale(1.1);
+        }
+
+        /*개별 페이지 디자인*/
+        .page {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            /*body의 100%기준*/
+        }
+
+        #page1 {
+            background: url(images/pic1.png) no-repeat top/cover;
+        }
+
+        #page2 {
+            background: url(images/pic2.png) no-repeat top/cover;
+        }
+
+        #page3 {
+            background: url(images/pic3.png) no-repeat top/cover;
+        }
+
+        #page4 {
+            background: url(images/pic4.png) no-repeat top/cover;
+        }
+
+        #page5 {
+            background: url(images/pic5.png) no-repeat top/cover;
+        }
+
+        #page6 {
+            background: url(images/pic6.png) no-repeat top/cover;
+        }
+
+        #page7 {
+            background: url(images/pic7.png) no-repeat top/cover;
+        }
+
+        /*블릿 네비게이션*/
+        ol#bnavi {
+            position: fixed;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            /*세로중앙*/
+            width: 15px;
+        }
+
+        #bnavi>li {
+            position: relative;
+            /*부모자격*/
+            width: 100%;
+            height: 15px;
+            box-sizing: border-box;
+            /*크기유지*/
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            /*원*/
+            box-shadow: 0 0 2px #777;
+            margin: 6px 0;
+            /*위아래 6px*/
+        }
+
+        #bnavi span {
+            position: absolute;
+            top: -50%;
+            right: 200%;
+            white-space: nowrap;
+            /*줄바꿈방지*/
+            font: bold .9rem "맑은 고딕";
+            text-shadow: 1px 0 #888, -1px 0 #888, 0 1px #888, 0 -1px #888;
+            /*글자테두리*/
+            display: none;
+            /*글자숨기기*/
+        }
+
+        /*마우스오버시 글자보이기*/
+        #bnavi li:hover span {
+            display: block;
+        }
+
+        /*a태그 크기 li와 같게*/
+        #bnavi a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /*선택된 블릿네비 class*/
+        #bnavi li.on {
+            background-color: #EC686A;
+            transform: scale(1.15);
+        }
+
+        #bnavi li.on span {
+            display: block;
+            /*선택메뉴 글자보이기*/
+        }
+    </style>
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <!--부드러운 스크롤 플러그인 불러오기-->
+    <script src="js/jquery.smoothwheel.js"></script>
+    <script>
+        /// 0. 페이지번호
+        var pno = 0;
+        /// 1. 각 스크롤액션 실행여부(0-실행전,1-실행후)
+        var p1=0,p2=0,p3=0,p4=0,p5=0,p6=0,p7=0;
+        /// 2. 스크롤액션 기준선 요소의 top값 셋팅변수
+        var p1pos,p2pos,p3pos,p4pos,p5pos,p6pos,p7pos;
+        /// 3. 스크롤 액션 기준선차이값
+        var gap = 200;
+        /// 4. 메뉴를 클릭할 경우 상태변수(0-클릭안함,1-클릭함)
+        var click_sts = 0;
+        
+        
+        
+        
+        $(function() { /// jQB //////////////////
+            
+            /// 스크롤액션 기준요소 top값셋팅
+            // offset().top 으로 각 요소의 top값을 구한다.
+            p1pos = $("#page1").offset().top;
+            p2pos = $("#page2").offset().top;
+            p3pos = $("#page3").offset().top;
+            p4pos = $("#page4").offset().top;
+            p5pos = $("#page5").offset().top;
+            p6pos = $("#page6").offset().top;
+            p7pos = $("#page7").offset().top;
+            
+            console.log("기준값:"+p1pos+"/"+p2pos+"/"+p3pos+"/"+p4pos+"/"+p5pos+"/"+p6pos+"/"+p7pos);
+
+            
+            
+            
+            
+            
+            // 부드러운 스크롤 적용함수 호출!
+            $("#wrap").smoothWheel();
+            
+            ////////// 스크롤 이벤트 함수 ////////////////
+        $("#wrap").scroll(function() {
+            //// 클릭으로 메뉴이동시 스크롤이벤트 작동막기!!! /////
+            if(click_sts===1) return false;
+            /////////////////////////////////////////////////
+            
+            // 스크롤 위치값
+            var scTop = $(this).scrollTop();
+            //console.log("스위:"+scTop);
+            
+
+            /////// 스크롤이동시 해당페이지 메뉴 변경하기 //////
+            /// 1번페이지 ////////////////////////////
+            if(scTop>p1pos && scTop<p1pos+gap && p1===0){
+                p1=1;//잠금!
+                p2=0;//아래페이지 잠금해제!
+                pno=0;//페이지번호설정!
+                chgMenu();//메뉴변경!
+            }//// 1번페이지 if문 /////////////////////
+            /// 2번페이지 ////////////////////////////
+            else if(scTop>p2pos-gap && scTop<p2pos+gap && p2===0){
+                p2=1;//잠금!
+                p1=0,p3=0;//위아래페이지 잠금해제!
+                pno=1;//페이지번호설정!
+                chgMenu();//메뉴변경!
+            }//// 2번페이지 else if문 /////////////////////
+            /// 3번페이지 ////////////////////////////
+            else if(scTop>p3pos-gap && scTop<p3pos+gap && p3===0){
+                p3=1;//잠금!
+                p2=0,p4=0;//위아래페이지 잠금해제!
+                pno=2;//페이지번호설정!
+                chgMenu();//메뉴변경!
+            }//// 3번페이지 else if문 /////////////////////
+            /// 4번페이지 ////////////////////////////
+            else if(scTop>p4pos-gap && scTop<p4pos+gap && p4===0){
+                p4=1;//잠금!
+                p3=0,p5=0;//위아래페이지 잠금해제!
+                pno=3;//페이지번호설정!
+                chgMenu();//메뉴변경!
+            }//// 4번페이지 else if문 /////////////////////
+            /// 5번페이지 ////////////////////////////
+            else if(scTop>p5pos-gap && scTop<p5pos+gap && p5===0){
+                p5=1;//잠금!
+                p4=0,p6=0;//위아래페이지 잠금해제!
+                pno=4;//페이지번호설정!
+                chgMenu();//메뉴변경!
+            }//// 5번페이지 else if문 /////////////////////
+            /// 6번페이지 ////////////////////////////
+            else if(scTop>p6pos-gap && scTop<p6pos+gap && p6===0){
+                p6=1;//잠금!
+                p5=0,p7=0;//위아래페이지 잠금해제!
+                pno=5;//페이지번호설정!
+                chgMenu();//메뉴변경!
+            }//// 6번페이지 else if문 /////////////////////
+            /// 7번페이지 ////////////////////////////
+            else if(scTop>p7pos-gap && scTop<p7pos+gap && p7===0){
+                p7=1;//잠금!
+                p6=0;//윗페이지 잠금해제!
+                pno=6;//페이지번호설정!
+                chgMenu();//메뉴변경!
+            }//// 7번페이지 else if문 /////////////////////
+
+        }); ///////////// scroll //////////////////////
+        //////////////////////////////////////////////
+        //////////////////////////////////////////////
+            
+            
+            
+
+
+
+            //// GNB a링크를 클릭하면 해당 페이지 위치로 이동 애니메이션 ///
+            // 이벤트대상: #gnb a
+            $("#gnb a,#bnavi a").click(function(e) {
+                // 1. a태그 기본이동 막기
+                e.preventDefault();
+                
+                // 클릭한 경우 스크롤 셋팅이 ->이거 $("#wrap").scroll() 
+                // 적용안되게 상태값 변경하기!
+                click_sts = 1;
+
+                // 클릭된 순번 알아오기
+                var idx = $(this).parent().index(); //li의 순번
+                console.log("클릭된순번:" + idx);
+                
+                pno = idx;//전역페이지번호에 넣기!
+
+
+                // 2. a태그의 href값 읽어오기(이동할 페이지 아이디값)
+                var pid = $(this).attr("href");
+                console.log("아이디:" + pid);
+
+                // 3. 이동할 페이지 아이디로 페이지 위치값(top값) 구하기
+                // offset() 메서드로 현재 요소 위치,크기정보를 알 수 있다!
+                //                var pgpos = $(pid).offset().top;
+                //                console.log("top값:"+pgpos);
+
+                // 4. 스크롤 이동 애니메이션
+                // 대상: html,body (범용브라우저 코딩시 선택대상)
+                // 사용속성: scrollTop (세로스크롤바 위치속성)
+                // 비교- scrollLeft (가로스크롤바 위치속성)
+                
+
+                // 자동스크롤 상태값 변경하여 멈추기!
+                // running변수는 스무스스크롤 플러그인에 있는 전역변수다.
+                // 이 변수는 자동스크롤상태를 체크한다.
+                // true 작동중, false면 작동중지
+                running = false;
+                
+                $("#wrap").animate({
+                    scrollTop: ($(window).height() * idx) + "px"
+                }, 600, "easeInOutQuint",function(){
+                    // 스크롤 이동 후 처리하기
+                    // 1. 스무스스크롤 현재위치값 일치하기
+                    // currentY는 스무스스크롤 플러그인 안에 있는 전역변수다
+                    // 이 변수는 현재 Y축 스크롤 위치값을 담고 있다.
+                    currentY = -($(window).height() * idx);
+                    
+                    // 2. 자동스크롤 상태변수인 running변수를 true변경하여 작동상태로 만든다.
+                    running = true;
+                    
+                    // 3. 자동스크롤 상태에서 필수로 호출해야 하는 애니메이트루프 함수를 호출해준다.(이 함수는 부드러운 스크롤을 만들어주는 기능의 함수임)
+                    animateLoop();
+                    
+                    // 4. 스크롤막기 상태 해제하기!
+                    click_sts = 0;
+                    
+                });/////////////// animate ///////////////////
+                
+
+                // 5. 이동선택된 메뉴변경하기(class="on"넣기)
+                chgMenu();
+
+
+            }); ////// click ////////////////
+
+
+            $("#wrap").scrollStopped(function() {
+                console.log("스크롤끝확인!");
+                // 부드러운 스크롤 세로 스크롤값에 현재 스크롤위치값 넣기!
+                // 부호는 반대임!
+                // currentY는 부드러운 스크롤에서 사용하는 Y축 스크롤위치값!
+                currentY = -$(this).scrollTop();
+            });
+
+
+
+        }); ////// jQB //////////////////////////
+        ////////////////////////////////////////
+        ////////////////////////////////////////
+
+
+        /// 스크롤 동작이 멈출때 이벤트 플러그인 함수만들기 ////
+        // 기본이벤트엔 스크롤 멈춤이 없음. 따라서 별도로 제작해야함!
+        $.fn.scrollStopped = function(callback) {
+            var _this = this,
+                $this = $(_this);
+            $this.scroll(function(event) {
+                clearTimeout($this.data('scrollTimeout'));
+                $this.data('scrollTimeout', setTimeout(callback.bind(_this), 250, event));
+            });
+        }; //////////// 스크롤멈춤 이벤트 함수 ////////////////////
+        
+        
+        /*//////////////////////////////////////////////
+            함수명: chgMenu
+            기능: GNB메뉴와 블릿메뉴 현재페이지에 맞게 변경하기
+        */ //////////////////////////////////////////////
+        function chgMenu() {
+            // 페이지번호 pno에 해당하는 메뉴만 class 넣기
+            
+            $("#gnb a").eq(pno).parent() //선택된 a요소의 부모 li를 선택
+                .addClass("on") //클래스 "on"넣기
+                .siblings() //선택된 li외의 다른 li 모두선택!
+                .removeClass("on"); //모두 클래스 "on"지우기
+
+            $("#bnavi a").eq(pno).parent() //선택된 a요소의 부모 li를 선택
+                .addClass("on") //클래스 "on"넣기
+                .siblings() //선택된 li외의 다른 li 모두선택!
+                .removeClass("on"); //모두 클래스 "on"지우기
+
+        } ////// chgMenu 함수 //////////////////////////////////
+        /////////////////////////////////////////////////
+        /////////////////////////////////////////////////
+        
+        
+        
+    </script>
+</head>
+
+<body>
+    <!--상단영역-->
+    <div class="top">
+        <header id="top" class="inbox">
+            <!--로고-->
+            <a href="#" id="logo">
+                <img src="images/logo.png" alt="메가박스로고">
+            </a>
+            <!--GNB메뉴-->
+            <nav id="gnb">
+                <ul>
+                    <li class="on">
+                        <a href="#page1">
+                            아수라
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page2">
+                            고산자
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page3">
+                            인천상륙작전
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page4">
+                            봉이김선달
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page5">
+                            비밀은없다
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page6">
+                            아가씨
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page7">
+                            탐정홍길동
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+    </div>
+
+    <!--각 페이지박스-->
+    <div id="wrap">
+        <section id="page1" class="page"></section>
+        <section id="page2" class="page"></section>
+        <section id="page3" class="page"></section>
+        <section id="page4" class="page"></section>
+        <section id="page5" class="page"></section>
+        <section id="page6" class="page"></section>
+        <section id="page7" class="page"></section>
+    </div>
+
+    <!--블릿네비게이션-->
+    <ol id="bnavi">
+        <li class="on">
+            <a href="#page1">
+                <span>아수라</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page2">
+                <span>고산자</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page3">
+                <span>인천상륙작전</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page4">
+                <span>봉이김선달</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page5">
+                <span>비밀은없다</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page6">
+                <span>아가씨</span>
+            </a>
+        </li>
+        <li>
+            <a href="#page7">
+                <span>탐정홍길동</span>
+            </a>
+        </li>
+    </ol>
+
+
+
+
+
+
+
+</body></html>

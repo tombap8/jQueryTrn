@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>따라다니는 애니메이션 마우스 포인터2</title>
+<script src="jquery-1.7.2.min.js"></script>
+<script src="jquery-ui.min.js"></script>
+    
+<script>
+    $(function(){/// jQB ////////////////////
+        
+        // 망치이미지 크기 절반값
+        var mycw = $("#myc").width()/2;
+        var mych = $("#myc").height()/2;
+        
+        /// 두더지위치값 크기 알아내기
+        var gtop = $(".gg").offset().top-mych;//보정값을 빼준다.
+        var gleft = $(".gg").offset().left-mycw;//보정값 뺌
+        var gwidth = $(".gg").width();
+        var gheight = $(".gg").height();
+        console.log("g정보:"+gtop+"/"+gleft+"/"+gwidth+"/"+gheight);
+        
+        var num=0;//때리기숫자!
+        
+        
+        
+        
+        
+        
+        /// 마우스 포인터 위치에 포인터 이미지 따라다니게 하기 ///
+        var posx,posy;//다른곳에서도 사용하도록 밖에 선언!!
+        $("body").mousemove(function(e){
+            posx = e.pageX-($("#myc").width()/2);
+            posy = e.pageY-($("#myc").height()/2);
+            /// 마우스 커서이미지가 중간에 오도록 크기의 절반값을 뺌!
+            
+            /// 위의 마우스 위치값에 포인트 이미지 있게하기
+            $("#myc").css({top:posy+"px",left:posx+"px"});
+        });///////// mousemove /////////////////////////
+        ///////////////////////////////////////////////
+        
+        $("#myc").on("mousedown",function(){
+            /// 마우스왼쪽버튼 누르면 회전하기
+            $(this).css({transform:"rotate(50deg)"});
+            
+            /// 두더지 영역범위안에 포인터가 오면 액션!!!
+            if(posx>gleft && posx<gleft+gwidth && posy>gtop && posy<gtop+gheight){
+//                console.log("범위야~!");
+                $(".gg").attr("src","images/g2.png");
+                num++;
+                $("#num").text(num);
+            }//// if문 ////////////////////////////
+            
+        });//////// mousedown 이벤트 ///////////
+        /////////////////////////////////////////
+        
+        
+        $("#myc").bind("mouseup",function(){
+            /// 마우스왼쪽버튼 때면 회전하기(원복)
+            $(this).css({transform:"rotate(0deg)"});           
+             
+            /// 두더지 영역범위안에 포인터가 오면 액션!!!
+            if(posx>gleft && posx<gleft+gwidth && posy>gtop && posy<gtop+gheight){
+//                console.log("범위야~!");
+                $(".gg").attr("src","images/g1.png");
+            }//// if문 ////////////////////////////
+            
+        });//////// mouseup 이벤트 ///////////
+        /////////////////////////////////////////
+        
+        
+    });/////////// jQB //////////////////////
+    /////////////////////////////////////////
+    
+    
+    
+    
+</script>
+    
+<style>
+    html,body{
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        cursor: url(images/hammer.png), auto;
+    }    
+    #screen{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #9DE551;
+    }
+    
+    /*마우스 포인터 이미지*/
+    #myc{
+        position: absolute;
+        width: 150px;
+        top: 0;
+        left: 0;
+        z-index: 99999;/*포인터는 가장위!!! 항상위!!!*/
+    }
+    /*두더지*/
+    .gg{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        width: 200px;
+    }
+    
+    #num{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 200px;
+        font: bold 200px/180px Verdana;
+        color: #fff;
+        text-shadow: 5px 0 #000, -5px 0 #000, 0 5px #000, 0 -5px #000;/*글자검정테두리*/
+        white-space: nowrap;
+    }
+    
+</style>
+</head>
+
+<body>
+<div id="screen"></div> 
+    
+<!--두더지이미지-->
+<img src="images/g1.png" alt="두더지" class="gg">
+    
+    
+<!--따라다닐 커서 이미지--> 
+<img src="images/hammer.png" alt="마우스포인터" id="myc">
+    
+<div id="num">0</div>
+    
+</body>
+</html>

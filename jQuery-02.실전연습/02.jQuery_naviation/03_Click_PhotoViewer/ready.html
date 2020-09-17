@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title> 슬라이딩 내비게이션(바네이 메뉴) </title>
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+    <script>
+        $(function() { //////// jQB //////////////////////
+
+            // 자동슬라이드 넘기기(웹디기능사용)
+            // 대상선정: #viewer
+            var tg = $("#viewer");
+
+            // 3초간격으로 슬라이드를 왼쪽방향으로 무한이동하기
+            setInterval(function() {
+                tg.animate({
+                        left: "-100%"
+                    }, 600,
+                    function() { // 이동후
+                        //맨앞li잘라서 맨뒤로 이동
+                        tg.append(tg.find("li").first())
+                            //동시에 tg위치값 left:0
+                            .css({
+                                left: "0"
+                            });
+
+                    }); /// animate //////
+
+
+
+            }, 3000); //// 인터발함수 ////////////
+
+
+
+
+
+
+
+        }); /////////// jQB //////////////////////////////
+    </script>
+
+    <style>
+        body {
+            font-size: 13px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #05184D;
+        }
+
+        #slider {
+            position: relative;
+            margin: 0 auto;
+            margin-top: 100px;
+            background: #FFF;
+            width: 600px;
+            border: #FDF6DD 2px solid;
+            overflow: hidden;
+        }
+
+        #viewer {
+            position: relative;
+            /*위치이동값을 사용할 수 있음*/
+            width: 400%;
+            /*4개이므로*/
+            height: 350px;
+            display: flex;
+            /*기본없애기*/
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        #viewer li {
+            flex: 1;
+        }
+
+
+        /*--------   ul li CSS ------------ */
+        #btnGroup {
+            position: absolute;
+            bottom: 2%;
+            right: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        #btnGroup li {
+            float: left;
+            width: 16px;
+            height: 16px;
+            list-style: none;
+            margin-right: 6px;
+            cursor: pointer;
+            background: url(image/btn.png) no-repeat;
+        }
+
+        /*li에 마우스오버시와 class="on"인 경우
+        -배경이미지위치이동하여 흰색블릿으로 변경*/
+        #btnGroup li:hover,
+        #btnGroup li.on {
+            background-position: 0 -16px;
+        }
+
+        /*배경이미지설명*/
+        .ir {
+            display: block;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+    <div id="slider">
+
+        <ul id="viewer">
+            <li>
+                <img src="image/slide1.jpg" alt="배너">
+            </li>
+            <li>
+                <img src="image/slide2.jpg" alt="배너">
+            </li>
+            <li>
+                <img src="image/slide3.jpg" alt="배너">
+            </li>
+            <li>
+                <img src="image/slide4.jpg" alt="배너">
+            </li>
+        </ul>
+
+        <!--<ul id="btnGroup">
+            <li class="on"><span class="ir">블릿</span></li>
+            <li><span class="ir">블릿</span></li>
+            <li><span class="ir">블릿</span></li>
+            <li><span class="ir">블릿</span></li>
+        </ul>-->
+
+    </div>
+
+    <!---------- jQuery code Start ---------->
+    <script>
+
+
+    </script>
+</body></html>
