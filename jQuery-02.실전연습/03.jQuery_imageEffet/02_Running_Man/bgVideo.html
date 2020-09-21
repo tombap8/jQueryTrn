@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BG Video</title>
+    <link href="https://fonts.googleapis.com/css?family=Bonbon|Poiret+One|Special+Elite&display=swap" rel="stylesheet">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /*애니메이션박스*/
+        #ani {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /*반투명 배경*/
+        #ani::after{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ff1ee5;
+            opacity: .5;
+        }
+        
+        /*장면이미지*/
+        #ani img{
+            width: 100%;
+            height: 100%;
+        }
+        
+        /*타이틀*/
+        .tit{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            font: bold 10vw 'Bonbon', cursive;
+            text-shadow: 4px 4px 5px #777;
+            white-space: nowrap;/*줄바꿈방지*/
+            
+        }
+    </style>
+    <script src="jquery-1.7.2.min.js"></script>
+    <script>
+        $(function(){ /////// jQB ///////////////////////
+            console.log("로딩완료!");
+            
+            /*//////////////////////////////////////////////////
+                함수명: arrImg
+                기능: 연속장면 이미지를 순서대로 선택요소 내부에 추가함
+            */ /////////////////////////////////////////////////
+            var arrImg = function() {
+                // 1. 함수호출확인
+                console.log("함수호출!");
+
+                // 2. 애니메이션 할 이미지 셋팅
+                for (var i = 0; i < 40; i++) {
+                    $("#ani")
+                        .append('<img src="new_seq/seq' + i + '.jpg" alt="장면">');
+                } ///// for문 ///////////////
+
+                // for문 셋팅 후 첫장면은 보이고 나머지 이미지 숨기기
+                $("#ani img").hide().first().show();
+
+            }; /////// arrImg 함수 ////////////////////////////
+            //////////////////////////////////////////////////
+
+
+            // 이미지셋팅함수 호출!
+            arrImg();
+
+            /*//////////////////////////////////////////////////
+                함수명: nextFrame
+                기능: 순서대로 다음 이미지를 한장씩 보이게함
+            */ //////////////////////////////////////////////////
+            // 장면번호
+            var fnum = 0;
+            // 장면개수
+            var fcnt = $("#ani img").length;
+            console.log("장면개수:" + fcnt);
+
+            var nextFrame = function() {
+                console.log("함수호출!");
+
+                // 1. 장면번호 증가하기
+                fnum++;
+                if (fnum > fcnt - 1) fnum = 0;
+                // 장면번호가 증가하다가 끝번호보다 커지면 처음으로(0번)
+
+                // 2. 보이는 장면은 숨기고
+                //:visible은 display:none이 아닌것을 선택함
+                $("#ani img:visible").hide();
+                // 3. 순번에 해당하는 이미지는 보이게한다!
+                $("#ani img").eq(fnum).show();
+
+            }; /////// nextFrame 함수 //////////////////////////////
+            ////////////////////////////////////////////////////
+            
+            /// 장면넘기기 호출!
+            setInterval(nextFrame,50);
+            
+            
+            /// 3초간격으로 글씨체 바꾸기 ///
+            // 대상: .tit
+            // 글자체 명
+            var ff = ["Bonbon","Poiret One","Special Elite"];
+            var fno = 0;
+            setInterval(function(){
+                
+                fno++;//1씩증가
+                if(fno>2) fno=0;//한계수
+                
+                $(".tit").css({
+                    fontFamily: ff[fno]
+                });//// css //////
+                
+            },3000);
+            
+
+        });////////// jQB ///////////////////////////////
+        /////////////////////////////////////////////////
+    
+    </script>
+</head>
+
+<body>
+
+    <!--애니메이션 박스-->
+    <div id="ani"></div>
+    <!--타이틀-->
+    <h1 class="tit">It's My Style!</h1>
+
+</body></html>
